@@ -1,0 +1,9 @@
+.menu__button {
+    height: 300px;
+    font-size: 2rem;
+    width: 100%;
+}
+
+.menu__link {
+    text-decoration: none;
+}
