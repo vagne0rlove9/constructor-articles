@@ -21,14 +21,16 @@ const Menu = () => {
                 </Link>
             </Grid>
             <Grid item xs={6}>
-                <Button
-                    color="secondary"
-                    variant="contained"
-                    className='menu__button'
-                    style={{ fontSize: '2rem', borderRadius: 0 }}
-                >
-                    PDF
-                </Button>
+                <Link to="/pdf" className="menu__link">
+                    <Button
+                        color="secondary"
+                        variant="contained"
+                        className='menu__button'
+                        style={{ fontSize: '2rem', borderRadius: 0 }}
+                    >
+                        PDF
+                    </Button>
+                </Link>
             </Grid>
             <Grid item xs={6}>
                 <Button

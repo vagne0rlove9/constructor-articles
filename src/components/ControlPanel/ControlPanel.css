@@ -1,0 +1,47 @@
+.control-panel {
+    padding: 20px;
+    background-color: #e0dfdf;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto;
+    margin-top: 16px;
+}
+
+@media screen and (max-width: 425px) {
+    .control-panel--width {
+        grid-template-columns: 1fr;
+        padding: 10px;
+        grid-gap: 8px;
+    }
+  }
+.control-panel__item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.control-panel__item-input-page {
+    width: 15px;
+    text-align: center;
+}
+
+.control-panel__item-input-zoom {
+    width: 25px;
+    text-align: center;
+}
+
+.control-panel__item-nav {
+    cursor: pointer;
+}
+
+.control-panel__item-nav:hover {
+    color: black;
+}
+
+.control-panel__item-nav--disabled {
+    cursor: not-allowed;
+}
+
+.control-panel__item-nav--rotate {
+    transform: rotate(180deg);
+}

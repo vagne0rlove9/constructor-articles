@@ -1,0 +1,29 @@
+.dropzone {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 120px;
+    background-color: #EF8A07;
+    border: 2px dashed #A55D00;
+    border-radius: 10px;
+    box-sizing: border-box;
+    flex-direction: column;
+    margin-bottom: 16px;
+}
+
+.dropzone__input {
+
+}
+
+.dropzone__input-file {
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.dropzone__input-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

@@ -1,0 +1,9 @@
+.page {
+    display: flex;
+    justify-content: center;
+    background-color: #e0dfdf;
+}
+
+.text-container {
+    text-align: center;
+}
