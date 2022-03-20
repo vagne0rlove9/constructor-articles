@@ -39,13 +39,15 @@ const Menu = () => {
                     style={{ fontSize: '2rem', borderRadius: 0 }}>PPTX</Button>
             </Grid>
             <Grid item xs={6}>
-                <Button
-                    variant="contained"
-                    className='menu__button'
-                    style={{ fontSize: '2rem', borderRadius: 0 }}
-                >
-                    Фотоотчет
-                </Button>
+                <Link to="/photos" className="menu__link">
+                    <Button
+                        variant="contained"
+                        className='menu__button'
+                        style={{ fontSize: '2rem', borderRadius: 0 }}
+                    >
+                        Фотоотчет
+                    </Button>
+                </Link>
             </Grid>
         </Grid >
     )

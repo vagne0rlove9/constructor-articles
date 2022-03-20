@@ -4,6 +4,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Menu from './components/Menu';
 import Container from '@mui/material/Container';
 import Constructor from './components/Constructor';
+import Photos from './components/Photos';
 import PDF from './components/PDF/PDF';
 
 import './App.css';
@@ -32,6 +33,7 @@ function App() {
                         <Route exact path="/" element={<Menu />} />
                         <Route path="/constructor" element={<Constructor />} />
                         <Route path="/pdf" element={<PDF />} />
+                        <Route path="/photos" element={<Photos />} />
                     </Routes>
                 </Container>
             </ThemeProvider>

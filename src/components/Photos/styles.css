@@ -1,0 +1,18 @@
+.photos {
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+.photos__swiper-slides {
+    width: 300px;
+    max-height: 300px;
+}
+
+.photos__swiper-slide-img {
+    width: 100%;
+}
+
+.swiper-slide {
+    width: 300px;
+    max-height: 300px;
+}
