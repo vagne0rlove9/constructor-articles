@@ -33,17 +33,22 @@ const Menu = () => {
                 </Link>
             </Grid>
             <Grid item xs={6}>
-                <Button
-                    variant="contained"
-                    className='menu__button'
-                    style={{ fontSize: '2rem', borderRadius: 0 }}>PPTX</Button>
+                <Link to="/pptx" className="menu__link">
+                    <Button
+                        variant="contained"
+                        className='menu__button'
+                        style={{ fontSize: '2rem', borderRadius: 0 }}>
+                        PPTX
+                    </Button>
+                </Link>
             </Grid>
             <Grid item xs={6}>
                 <Link to="/photos" className="menu__link">
                     <Button
+                        color="photos_primary"
                         variant="contained"
                         className='menu__button'
-                        style={{ fontSize: '2rem', borderRadius: 0 }}
+                        style={{ fontSize: '2rem', borderRadius: 0, color: 'white' }}
                     >
                         Фотоотчет
                     </Button>

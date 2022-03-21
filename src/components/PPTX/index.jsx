@@ -1,26 +1,27 @@
-import React, { useState, useCallback } from 'react';
-import { Document, Page } from 'react-pdf/dist/esm/entry.webpack';
-import { useDropzone } from 'react-dropzone';
+import React, { useCallback, useState } from 'react';
 import axios from 'axios';
-import Typography from '@mui/material/Typography';
-import ControlPanel from '../ControlPanel/ControlPanel';
-import Dropzone from '../Dropzone/Dropzone';
 import { Link } from 'react-router-dom';
-
+import { styled } from '@mui/material/styles';
+import ControlPanel from '../ControlPanel/ControlPanel';
+import { Document, Page } from 'react-pdf/dist/esm/entry.webpack';
+import Dropzone from '../Dropzone/Dropzone';
+import { useDropzone } from 'react-dropzone';
 import { Button } from '@mui/material';
+import Typography from '@mui/material/Typography';
 
-import './PDF.css';
+const Input = styled('input')({
+    display: 'none',
+});
 
-axios.defaults.baseURL = 'http://localhost:8080/';
-
-const PDF = () => {
+const PPTX = () => {
+    const [file, setFile] = useState(null);
     const [numPages, setNumPages] = useState(null);
     const [pageNumber, setPageNumber] = useState(null);
     const [zoom, setZoom] = useState(1);
-    const [file, setFile] = useState([]);
+    const [filePDF, setFilePDF] = useState([]);
 
     const onDrop = useCallback(acceptedFiles => {
-        setFile(acceptedFiles);
+        setFilePDF(acceptedFiles);
         setPageNumber(1);
     }, [])
 
@@ -38,7 +39,7 @@ const PDF = () => {
 
     const deleteHandler = event => {
         event.stopPropagation();
-        setFile([]);
+        setFilePDF([]);
         setPageNumber(null);
     }
 
@@ -96,47 +97,80 @@ const PDF = () => {
         }
     }
 
-    const submitArtcile = useCallback(
-        () => {
-            //axios.post('', images);
-            console.log(file);
-        },
-        [file],
-    )
+
+    const loadImageHandler = useCallback((event) => {
+        if (event.target.files && event.target.files[0]) {
+            const formData = new FormData();
+            formData.append('File', event.target.files[0]);
+            console.log(event.target.files[0], formData);
+            axios({
+                method: 'post',
+                url: 'https://v2.convertapi.com/convert/ppt/to/pdf',
+                params: {
+                    Secret: 'KJB1amJKHGicTPZ4',
+                    StoreFile: true,
+                },
+                data: formData,
+                headers: { 'content-type': 'multipart/form-data' },
+            })
+                .then(response => {
+                    console.log('response', response)
+                    if (response.data.Files) {
+                        setFile(response.data.Files[0].Url);
+                    }
+                });
+        }
+    }, []);
 
     return (
-        <div>
+        <>
             <Link to="/" className="photos__back-button">
                 <Button
                     variant="outlined"
-                    color="secondary"
+                    color="photos_primary"
                     component="span"
                     style={{ marginBottom: '24px' }}
                 >
                     Вернуться на главную
                 </Button>
             </Link>
-            <h2>Создание статьи с помощью PDF</h2>
+            <h2>Создание статьи с помощью PPTX</h2>
             <p>
-                Вы можете добавить Вашу статью в формате PDF файла
+                Вы можете загрузить файл формата pptx, далее мы его преобразуем в более удобный формат pdf, после этого Вам необходимо загрузить pdf файл
             </p>
             <p>
                 После добавления нажимте кнопку "Отправить статью"
             </p>
-            <Button
+            <label htmlFor="contained-button-file">
+                <Input accept="pptx/*" id="contained-button-file" multiple type="file" onChange={loadImageHandler} />
+                <Button
                     variant="contained"
-                    color="secondary"
+                    color="photos_primary"
                     component="span"
                     style={{ color: 'white', marginBottom: '24px' }}
-                    onClick={submitArtcile}
                 >
-                    Отправть отчет
+                    Загрузить файл
                 </Button>
+            </label>
+            {
+                file ?
+                    <object type="application/pdf"
+                        data={file}
+                        width="0"
+                        height="0"
+
+                    >
+                    </object>
+                    :
+                    <Typography className="text-container" variant="h6" gutterBottom component="div">
+                        Файл не выбран
+                    </Typography>
+            }
             <Dropzone
                 getRootProps={getRootProps}
                 getInputProps={getInputProps}
                 isDragActive={isDragActive}
-                file={file}
+                file={filePDF}
                 deleteHandler={deleteHandler}
             />
             <ControlPanel
@@ -151,17 +185,14 @@ const PDF = () => {
                 changeZoomHandler={changeZoomHandler}
             />
             {
-                file.length !== 0 ?
-                    <Document file={file.length !== 0 ? file[0] : null} onLoadSuccess={onDocumentLoadSuccess}>
+                filePDF.length !== 0 &&
+                    <Document file={filePDF.length !== 0 ? filePDF[0] : null} onLoadSuccess={onDocumentLoadSuccess}>
                         <Page pageNumber={pageNumber} className="page" scale={zoom} />
                     </Document>
-                    :
-                    <Typography className="text-container" variant="h6" gutterBottom component="div">
-                        Файл не выбран
-                    </Typography>
-            }
-        </div>
-    );
-};
 
-export default PDF;
+            }
+        </>
+    )
+}
+
+export default PPTX;

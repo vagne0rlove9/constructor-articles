@@ -6,6 +6,7 @@ import Container from '@mui/material/Container';
 import Constructor from './components/Constructor';
 import Photos from './components/Photos';
 import PDF from './components/PDF/PDF';
+import PPTX from './components/PPTX';
 
 import './App.css';
 
@@ -21,6 +22,16 @@ const theme = createTheme({
             light: '#6effe8',
             dark: '#00b686',
         },
+        photos_primary: {
+            main: '#4527a0',
+            light: '#7953d2',
+            dark: '#311b92',
+        },
+        photos_secondary: {
+            main: '#2e7d32',
+            light: '#7953d2',
+            dark: '#005005',
+        },
     },
 });
 
@@ -34,6 +45,7 @@ function App() {
                         <Route path="/constructor" element={<Constructor />} />
                         <Route path="/pdf" element={<PDF />} />
                         <Route path="/photos" element={<Photos />} />
+                        <Route path="/pptx" element={<PPTX />} />
                     </Routes>
                 </Container>
             </ThemeProvider>

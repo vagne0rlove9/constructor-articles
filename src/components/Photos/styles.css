@@ -1,18 +1,22 @@
 .photos {
-    padding-top: 40px;
     padding-bottom: 40px;
 }
 
-.photos__swiper-slides {
-    width: 300px;
-    max-height: 300px;
+.photos__back-button {
+    position: fixed;
+    top: 20px;
+    left: 100px;
+    text-decoration: none;
 }
 
 .photos__swiper-slide-img {
     width: 100%;
 }
 
-.swiper-slide {
-    width: 300px;
-    max-height: 300px;
+.swiper-button-next, .swiper-button-prev {
+    color: #4527a0;
+}
+
+.swiper-pagination-bullet-active {
+    background-color: #4527a0;
 }
