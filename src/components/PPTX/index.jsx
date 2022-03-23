@@ -158,7 +158,6 @@ const PPTX = () => {
                         data={file}
                         width="0"
                         height="0"
-
                     >
                     </object>
                     :

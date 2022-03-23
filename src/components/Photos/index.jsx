@@ -19,9 +19,17 @@ const Input = styled('input')({
     display: 'none',
 });
 
+const instance = axios.create({
+    baseURL: 'http://23.111.124.132:8080/',
+});
+
+//axios.defaults.baseURL = 'http://23.111.124.132:8080';
+
 const Photos = () => {
     const swiper = useSwiper();
     const [images, setImages] = useState([]);
+    const [imagesDisplay, setImagesDisplay] = useState([]);
+    const [receivedImage, setReceivedImage] = useState(null);
 
     useEffect(() => {
         swiper?.update();
@@ -32,18 +40,37 @@ const Photos = () => {
         if (event.target.files && event.target.files[0]) {
             let img = event.target.files[0];
             const newVal = [...images];
-            newVal.push(URL.createObjectURL(img));
+            const newImagesDisplay = [...imagesDisplay];
+            newVal.push(img);
+            newImagesDisplay.push(URL.createObjectURL(img));
+            setImagesDisplay(newImagesDisplay);
             setImages(newVal);
         }
-    }, [images]);
+    }, [images, imagesDisplay]);
 
     const submitImages = useCallback(
         () => {
-            //axios.post('', images);
-            console.log(images);
+            images.map(item => {
+                const formData = new FormData();
+                formData.append('file', item);
+                instance.post('/api/v3/file', formData);
+            });
         },
         [images],
-    )
+    );
+
+    const receiveImages = useCallback(
+        () => {
+            instance.get(`/api/v3/files/${14}`, {
+                responseType: "blob",
+            })
+                .then(response => {
+                    console.log(response);
+                    setReceivedImage(URL.createObjectURL(response.data));
+                });
+        },
+        [],
+    );
 
     return (
         <div className="photos">
@@ -75,6 +102,18 @@ const Photos = () => {
                     Отправить отчет
                 </Button>
             </div>
+            <div>
+                <Button
+                    variant="contained"
+                    color="photos_secondary"
+                    component="span"
+                    style={{ color: 'white', marginBottom: '24px' }}
+                    onClick={receiveImages}
+                >
+                    Получить фото
+                </Button>
+            </div>
+            <img src={receivedImage} alt='' id="image-1" />
             <label htmlFor="contained-button-file">
                 <Input accept="image/*" id="contained-button-file" multiple type="file" onChange={loadImageHandler} />
                 <Button
@@ -94,7 +133,7 @@ const Photos = () => {
                 pagination
                 modules={[Navigation, Pagination]}
             >
-                {images.map(item => (
+                {imagesDisplay.map(item => (
                     <SwiperSlide key={item}>
                         <picture>
                             <source srcSet={item} />
