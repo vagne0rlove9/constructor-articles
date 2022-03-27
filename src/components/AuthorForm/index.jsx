@@ -2,6 +2,8 @@ import React from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import FormControl from '@mui/material/FormControl';
+import { Button } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import './styles.css';
 
@@ -14,7 +16,8 @@ const AuthorForm = ({
     changeNameHandler,
     changeSecondNameHandler,
     changeThirdNameHandler,
-    changeEmailHandler
+    changeEmailHandler,
+    deleteHandler
 }) => {
     return (
         <Box
@@ -23,6 +26,15 @@ const AuthorForm = ({
             autoComplete="off"
             className="authors-form"
         >
+            <Button
+                variant="text"
+                color="photos_primary"
+                component="span"
+                style={{ position: 'absolute', right: -10, top: -5 }}
+                onClick={deleteHandler}
+            >
+                <DeleteIcon />
+            </Button>
             <h4>Информация об авторе</h4>
             <FormControl fullWidth sx={{ m: 1 }} variant="standard">
                 <TextField

@@ -40,31 +40,66 @@ const Photos = () => {
     const [authors, setAuthors] = useState([emptyAuthor]);
     const [annotation, setAnnotation] = useState('');
     const [type, setType] = useState('');
+    const [isFullImages, setIsFullImages] = useState(false);
+    const [isFullAuthors, setIsFullAuthors] = useState(false);
     const [keywords, setKeywords] = useState('');
 
     useEffect(() => {
         swiper?.update();
-    }, [images, swiper]);
+    }, [imagesDisplay, swiper]);
+
+    const deleteHandler = useCallback((index) => {
+        let newAuthors = [...authors];
+
+        if (newAuthors.length === 1) {
+            return;
+        }
+
+        newAuthors.splice(index, 1);
+        setAuthors(newAuthors);
+    }, [authors]);
 
     const loadImageHandler = useCallback((event) => {
         if (event.target.files && event.target.files[0]) {
             let img = event.target.files[0];
-            console.log(img);
-            const newVal = [...images];
+
             const newImagesDisplay = [...imagesDisplay];
-            newVal.push(img);
             newImagesDisplay.push(URL.createObjectURL(img));
+
+            if (newImagesDisplay.length === 11) {
+                setIsFullImages(true);
+                return;
+            }
+
+            event.target.files[0].arrayBuffer().then(resp => {
+                let ui8 = new Uint8Array(resp);
+                let rawData = [...ui8];
+
+                const data = {
+                    id: '1',
+                    name: img.name,
+                    originalFileName: img.name,
+                    contentType: img.type,
+                    size: img.size,
+                    bytes: rawData,
+                };
+
+                const newVal = [...images];
+                newVal.push(data);
+                setImages(newVal);
+            });
+
             setImagesDisplay(newImagesDisplay);
-            setImages(newVal);
         }
     }, [images, imagesDisplay]);
 
     const submitImages = useCallback(
         () => {
             const date = new Date();
+
             const data = {
                 id: '1',
-                fio: authors[0].secondName + authors[0].name,
+                fio: `${authors[0].secondName} ${authors[0].name}`,
                 email: authors[0].email,
                 annotation,
                 keywords: keywords,
@@ -72,8 +107,8 @@ const Photos = () => {
                 date: date.toLocaleString(),
                 resources: images,
             };
-            console.log('data', data);
-            instance.post('/api/v3/file', data);
+
+            instance.post('/api/v3/articleimage', data);
         },
         [annotation, authors, images, keywords, type],
     );
@@ -94,6 +129,12 @@ const Photos = () => {
     const addAuthorHandler = useCallback(() => {
         const newAuthors = [...authors];
         newAuthors.push({ name: '', secondName: '', thirdName: '', email: '' });
+
+        if (newAuthors.length === 10) {
+            setIsFullAuthors(true);
+            return;
+        }
+
         setAuthors(newAuthors);
     }, [authors]);
 
@@ -191,10 +232,12 @@ const Photos = () => {
                     changeSecondNameHandler={(event) => changeSecondNameHandler(event, index)}
                     changeThirdNameHandler={(event) => changeThirdNameHandler(event, index)}
                     changeEmailHandler={(event) => changeEmailHandler(event, index)}
+                    deleteHandler={() => deleteHandler(index)}
                 />
             ))}
             <div>
                 <Button
+                    disabled={isFullAuthors}
                     variant="contained"
                     color="primary"
                     component="span"
@@ -208,8 +251,16 @@ const Photos = () => {
                 </Button>
             </div>
             <label htmlFor="contained-button-file">
-                <Input accept="image/*" id="contained-button-file" multiple type="file" onChange={loadImageHandler} />
+                <Input
+                    accept="image/*"
+                    id="contained-button-file"
+                    multiple
+                    type="file"
+                    onChange={loadImageHandler}
+                    disabled={isFullImages}
+                />
                 <Button
+                    disabled={isFullImages}
                     variant="contained"
                     color="photos_primary"
                     component="span"

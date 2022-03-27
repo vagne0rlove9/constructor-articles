@@ -9,6 +9,7 @@ import PDF from './components/PDF/PDF';
 import PPTX from './components/PPTX';
 
 import './App.css';
+import PhotosDetail from './components/PhotosDetail';
 
 const theme = createTheme({
     palette: {
@@ -45,6 +46,7 @@ function App() {
                         <Route path="/constructor" element={<Constructor />} />
                         <Route path="/pdf" element={<PDF />} />
                         <Route path="/photos" element={<Photos />} />
+                        <Route path="/photos/:id" element={<PhotosDetail />} />
                         <Route path="/pptx" element={<PPTX />} />
                     </Routes>
                 </Container>
