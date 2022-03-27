@@ -5,10 +5,13 @@ import { Link } from 'react-router-dom';
 
 import { styled } from '@mui/material/styles';
 import { Button } from '@mui/material';
+import TextField from '@mui/material/TextField';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { useSwiper } from 'swiper/react';
 import { Navigation, Pagination } from "swiper";
+
+import AuthorForm from '../AuthorForm';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -23,22 +26,30 @@ const instance = axios.create({
     baseURL: 'http://23.111.124.132:8080/',
 });
 
-//axios.defaults.baseURL = 'http://23.111.124.132:8080';
+const emptyAuthor = {
+    name: '',
+    secondName: '',
+    thirdName: '',
+    email: '',
+};
 
 const Photos = () => {
     const swiper = useSwiper();
     const [images, setImages] = useState([]);
     const [imagesDisplay, setImagesDisplay] = useState([]);
-    const [receivedImage, setReceivedImage] = useState(null);
+    const [authors, setAuthors] = useState([emptyAuthor]);
+    const [annotation, setAnnotation] = useState('');
+    const [type, setType] = useState('');
+    const [keywords, setKeywords] = useState('');
 
     useEffect(() => {
         swiper?.update();
-    }, [images, swiper])
-
+    }, [images, swiper]);
 
     const loadImageHandler = useCallback((event) => {
         if (event.target.files && event.target.files[0]) {
             let img = event.target.files[0];
+            console.log(img);
             const newVal = [...images];
             const newImagesDisplay = [...imagesDisplay];
             newVal.push(img);
@@ -50,27 +61,65 @@ const Photos = () => {
 
     const submitImages = useCallback(
         () => {
-            images.map(item => {
-                const formData = new FormData();
-                formData.append('file', item);
-                instance.post('/api/v3/file', formData);
-            });
+            const date = new Date();
+            const data = {
+                id: '1',
+                fio: authors[0].secondName + authors[0].name,
+                email: authors[0].email,
+                annotation,
+                keywords: keywords,
+                type: type,
+                date: date.toLocaleString(),
+                resources: images,
+            };
+            console.log('data', data);
+            instance.post('/api/v3/file', data);
         },
-        [images],
+        [annotation, authors, images, keywords, type],
     );
 
-    const receiveImages = useCallback(
-        () => {
-            instance.get(`/api/v3/files/${14}`, {
-                responseType: "blob",
-            })
-                .then(response => {
-                    console.log(response);
-                    setReceivedImage(URL.createObjectURL(response.data));
-                });
-        },
-        [],
-    );
+    // const receiveImages = useCallback(
+    //     () => {
+    //         instance.get(`/api/v3/files/${14}`, {
+    //             responseType: "blob",
+    //         })
+    //             .then(response => {
+    //                 console.log(response);
+    //                 setReceivedImage(URL.createObjectURL(response.data));
+    //             });
+    //     },
+    //     [],
+    // );
+
+    const addAuthorHandler = useCallback(() => {
+        const newAuthors = [...authors];
+        newAuthors.push({ name: '', secondName: '', thirdName: '', email: '' });
+        setAuthors(newAuthors);
+    }, [authors]);
+
+    const changeNameHandler = useCallback(({ target }, id) => {
+        const newAuthors = [...authors];
+        newAuthors[id].name = target.value;
+        setAuthors(newAuthors);
+    }, [authors]);
+
+    const changeSecondNameHandler = useCallback(({ target }, id) => {
+        const newAuthors = [...authors];
+        newAuthors[id].secondName = target.value;
+        setAuthors(newAuthors);
+    }, [authors]);
+
+    const changeThirdNameHandler = useCallback(({ target }, id) => {
+        const newAuthors = [...authors];
+        newAuthors[id].thirdName = target.value;
+        setAuthors(newAuthors);
+    }, [authors]);
+
+    const changeEmailHandler = useCallback(({ target }, id) => {
+        const newAuthors = [...authors];
+        newAuthors[id].email = target.value;
+        setAuthors(newAuthors);
+    }, [authors]);
 
     return (
         <div className="photos">
@@ -91,6 +140,33 @@ const Photos = () => {
             <p>
                 После добавления нажимте кнопку "Отправить отчет"
             </p>
+            <div style={{ maxWidth: 400, margin: '12px auto' }}>
+                <TextField
+                    fullWidth
+                    label="Аннотация"
+                    multiline
+                    maxRows={4}
+                    value={annotation}
+                    onChange={(event) => setAnnotation(event.target.value)}
+                />
+            </div>
+            <div style={{ maxWidth: 400, margin: '12px auto' }}>
+                <TextField
+                    fullWidth
+                    label="Тип статьи"
+                    value={type}
+                    onChange={(event) => setType(event.target.value)}
+                />
+            </div>
+            <div style={{ maxWidth: 400, margin: '12px auto' }}>
+                <TextField
+                    fullWidth
+                    label="Ключевые слова"
+                    placeholder="Введите ключевые слова через запятую"
+                    value={keywords}
+                    onChange={(event) => setKeywords(event.target.value)}
+                />
+            </div>
             <div>
                 <Button
                     variant="contained"
@@ -102,18 +178,35 @@ const Photos = () => {
                     Отправить отчет
                 </Button>
             </div>
+            {authors.map((author, index) => (
+                <AuthorForm
+                    id={index}
+                    key={index}
+                    name={author.name}
+                    secondName={author.secondName}
+                    thirdName={author.thirdName}
+                    email={author.email}
+                    addAuthorHandler={addAuthorHandler}
+                    changeNameHandler={changeNameHandler}
+                    changeSecondNameHandler={(event) => changeSecondNameHandler(event, index)}
+                    changeThirdNameHandler={(event) => changeThirdNameHandler(event, index)}
+                    changeEmailHandler={(event) => changeEmailHandler(event, index)}
+                />
+            ))}
             <div>
                 <Button
                     variant="contained"
-                    color="photos_secondary"
+                    color="primary"
                     component="span"
-                    style={{ color: 'white', marginBottom: '24px' }}
-                    onClick={receiveImages}
+                    style={{
+                        color: 'white',
+                        marginBottom: '24px'
+                    }}
+                    onClick={addAuthorHandler}
                 >
-                    Получить фото
+                    Добавить автора
                 </Button>
             </div>
-            <img src={receivedImage} alt='' id="image-1" />
             <label htmlFor="contained-button-file">
                 <Input accept="image/*" id="contained-button-file" multiple type="file" onChange={loadImageHandler} />
                 <Button
