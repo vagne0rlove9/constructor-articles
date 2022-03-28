@@ -4,8 +4,9 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 
 import { styled } from '@mui/material/styles';
-import { Button } from '@mui/material';
+import { Button, Grid } from '@mui/material';
 import TextField from '@mui/material/TextField';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { useSwiper } from 'swiper/react';
@@ -40,6 +41,7 @@ const Photos = () => {
     const [authors, setAuthors] = useState([emptyAuthor]);
     const [annotation, setAnnotation] = useState('');
     const [type, setType] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const [isFullImages, setIsFullImages] = useState(false);
     const [isFullAuthors, setIsFullAuthors] = useState(false);
     const [keywords, setKeywords] = useState('');
@@ -76,7 +78,7 @@ const Photos = () => {
                 let rawData = [...ui8];
 
                 const data = {
-                    id: '1',
+                    id: '',
                     name: img.name,
                     originalFileName: img.name,
                     contentType: img.type,
@@ -95,20 +97,27 @@ const Photos = () => {
 
     const submitImages = useCallback(
         () => {
+            setIsLoading(prev => !prev);
+
             const date = new Date();
 
             const data = {
-                id: '1',
-                fio: `${authors[0].secondName} ${authors[0].name}`,
-                email: authors[0].email,
+                id: '',
                 annotation,
                 keywords: keywords,
                 type: type,
                 date: date.toLocaleString(),
                 resources: images,
             };
+            data.author = '';
+            data.email = '';
+            authors.map(author => {
+                data.author = data.author + `${author.secondName} ${author.name}, `;
+                data.email = data.email + `${author.email}, `;
+            });
 
-            instance.post('/api/v3/articleimage', data);
+            instance.post('/api/v3/articleimage', data)
+                .then(response => setIsLoading(prev => !prev));
         },
         [annotation, authors, images, keywords, type],
     );
@@ -163,130 +172,125 @@ const Photos = () => {
     }, [authors]);
 
     return (
-        <div className="photos">
-            <Link to="/" className="photos__back-button">
-                <Button
-                    variant="outlined"
-                    color="photos_primary"
-                    component="span"
-                    style={{ marginBottom: '24px' }}
-                >
-                    Вернуться на главную
-                </Button>
-            </Link>
-            <h2>Фотоотчет</h2>
-            <p>
-                Вы можете добавить все необходимые фотографии в отчет
-            </p>
-            <p>
-                После добавления нажимте кнопку "Отправить отчет"
-            </p>
-            <div style={{ maxWidth: 400, margin: '12px auto' }}>
-                <TextField
-                    fullWidth
-                    label="Аннотация"
-                    multiline
-                    maxRows={4}
-                    value={annotation}
-                    onChange={(event) => setAnnotation(event.target.value)}
-                />
-            </div>
-            <div style={{ maxWidth: 400, margin: '12px auto' }}>
-                <TextField
-                    fullWidth
-                    label="Тип статьи"
-                    value={type}
-                    onChange={(event) => setType(event.target.value)}
-                />
-            </div>
-            <div style={{ maxWidth: 400, margin: '12px auto' }}>
-                <TextField
-                    fullWidth
-                    label="Ключевые слова"
-                    placeholder="Введите ключевые слова через запятую"
-                    value={keywords}
-                    onChange={(event) => setKeywords(event.target.value)}
-                />
-            </div>
-            <div>
-                <Button
-                    variant="contained"
-                    color="photos_secondary"
-                    component="span"
-                    style={{ color: 'white', marginBottom: '24px' }}
-                    onClick={submitImages}
-                >
-                    Отправить отчет
-                </Button>
-            </div>
-            {authors.map((author, index) => (
-                <AuthorForm
-                    id={index}
-                    key={index}
-                    name={author.name}
-                    secondName={author.secondName}
-                    thirdName={author.thirdName}
-                    email={author.email}
-                    addAuthorHandler={addAuthorHandler}
-                    changeNameHandler={changeNameHandler}
-                    changeSecondNameHandler={(event) => changeSecondNameHandler(event, index)}
-                    changeThirdNameHandler={(event) => changeThirdNameHandler(event, index)}
-                    changeEmailHandler={(event) => changeEmailHandler(event, index)}
-                    deleteHandler={() => deleteHandler(index)}
-                />
-            ))}
-            <div>
-                <Button
-                    disabled={isFullAuthors}
-                    variant="contained"
-                    color="primary"
-                    component="span"
-                    style={{
-                        color: 'white',
-                        marginBottom: '24px'
-                    }}
-                    onClick={addAuthorHandler}
-                >
-                    Добавить автора
-                </Button>
-            </div>
-            <label htmlFor="contained-button-file">
-                <Input
-                    accept="image/*"
-                    id="contained-button-file"
-                    multiple
-                    type="file"
-                    onChange={loadImageHandler}
-                    disabled={isFullImages}
-                />
-                <Button
-                    disabled={isFullImages}
-                    variant="contained"
-                    color="photos_primary"
-                    component="span"
-                    style={{ color: 'white', marginBottom: '24px' }}
-                >
-                    Загрузить фото
-                </Button>
-            </label>
-            <Swiper
-                spaceBetween={24}
-                slidesPerView={3}
-                centeredSlides
-                navigation
-                pagination
-                modules={[Navigation, Pagination]}
-            >
-                {imagesDisplay.map(item => (
-                    <SwiperSlide key={item}>
-                        <picture>
-                            <source srcSet={item} />
-                            <img alt="" src={item} loading="lazy" className="photos__swiper-slide-img" />
-                        </picture>
-                    </SwiperSlide>
+        <Grid container spacing={5}>
+            <Grid item xs={4}>
+                <h2>Фотоотчет</h2>
+                <p>
+                    Вы можете добавить все необходимые фотографии в отчет
+                </p>
+                <p>
+                    После добавления нажимте кнопку "Отправить отчет"
+                </p>
+                <div style={{ maxWidth: 400, margin: '12px auto' }}>
+                    <TextField
+                        fullWidth
+                        label="Аннотация"
+                        multiline
+                        maxRows={4}
+                        value={annotation}
+                        onChange={(event) => setAnnotation(event.target.value)}
+                    />
+                </div>
+                <div style={{ maxWidth: 400, margin: '12px auto' }}>
+                    <TextField
+                        fullWidth
+                        label="Тип статьи"
+                        value={type}
+                        onChange={(event) => setType(event.target.value)}
+                    />
+                </div>
+                <div style={{ maxWidth: 400, margin: '12px auto' }}>
+                    <TextField
+                        fullWidth
+                        label="Ключевые слова"
+                        placeholder="Введите ключевые слова через запятую"
+                        value={keywords}
+                        onChange={(event) => setKeywords(event.target.value)}
+                    />
+                </div>
+                <div>
+                    <LoadingButton
+                        loading={isLoading}
+                        variant="contained"
+                        color="photos_secondary"
+                        component="span"
+                        style={{ color: 'white', marginBottom: '24px' }}
+                        onClick={submitImages}
+                    >
+                        Отправить отчет
+                    </LoadingButton>
+                </div>
+                {authors.map((author, index) => (
+                    <AuthorForm
+                        id={index}
+                        key={index}
+                        name={author.name}
+                        secondName={author.secondName}
+                        thirdName={author.thirdName}
+                        email={author.email}
+                        addAuthorHandler={addAuthorHandler}
+                        changeNameHandler={changeNameHandler}
+                        changeSecondNameHandler={(event) => changeSecondNameHandler(event, index)}
+                        changeThirdNameHandler={(event) => changeThirdNameHandler(event, index)}
+                        changeEmailHandler={(event) => changeEmailHandler(event, index)}
+                        deleteHandler={() => deleteHandler(index)}
+                    />
                 ))}
-            </Swiper>
-        </div>
+                <div>
+                    <Button
+                        disabled={isFullAuthors}
+                        variant="contained"
+                        color="primary"
+                        component="span"
+                        style={{
+                            color: 'white',
+                            marginBottom: '24px'
+                        }}
+                        onClick={addAuthorHandler}
+                    >
+                        Добавить автора
+                    </Button>
+                </div>
+            </Grid>
+            <Grid item xs={8}>
+                <label htmlFor="contained-button-file">
+                    <Input
+                        accept="image/*"
+                        id="contained-button-file"
+                        multiple
+                        type="file"
+                        onChange={loadImageHandler}
+                        disabled={isFullImages}
+                    />
+                    <Button
+                        disabled={isFullImages}
+                        variant="contained"
+                        color="photos_primary"
+                        component="span"
+                        style={{ color: 'white', marginBottom: '24px' }}
+                    >
+                        Загрузить фото
+                    </Button>
+                </label>
+                <Swiper
+                    spaceBetween={24}
+                    slidesPerView={3}
+                    centeredSlides
+                    navigation
+                    pagination
+                    modules={[Navigation, Pagination]}
+                >
+                    {imagesDisplay.map(item => (
+                        <SwiperSlide key={item}>
+                            <picture>
+                                <source srcSet={item} />
+                                <img alt="" src={item} loading="lazy" className="photos__swiper-slide-img" />
+                            </picture>
+                        </SwiperSlide>
+                    ))}
+                </Swiper>
+            </Grid>
+        </Grid>
     )
 }
 

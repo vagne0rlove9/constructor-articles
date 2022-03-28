@@ -13,7 +13,7 @@ const Menu = () => {
                 <Link to="/constructor" className="menu__link">
                     <Button
                         variant="contained"
-                        className='menu__button'
+                        className='menu__button-main'
                         style={{ fontSize: '2rem', borderRadius: 0 }}
                     >
                         Конструктор
@@ -25,8 +25,8 @@ const Menu = () => {
                     <Button
                         color="secondary"
                         variant="contained"
-                        className='menu__button'
-                        style={{ fontSize: '2rem', borderRadius: 0 }}
+                        className='menu__button-secondary'
+                        style={{ fontSize: '2rem', borderRadius: 0, color: 'white' }}
                     >
                         PDF
                     </Button>
@@ -35,9 +35,15 @@ const Menu = () => {
             <Grid item xs={6}>
                 <Link to="/pptx" className="menu__link">
                     <Button
+                        color="photos_secondary"
                         variant="contained"
-                        className='menu__button'
-                        style={{ fontSize: '2rem', borderRadius: 0 }}>
+                        className='menu__button-secondary'
+                        style={{
+                            fontSize: '2rem',
+                            borderRadius: 0,
+                            color: 'white',
+                            transition: 'all 0.4s',
+                        }}>
                         PPTX
                     </Button>
                 </Link>
@@ -47,7 +53,7 @@ const Menu = () => {
                     <Button
                         color="photos_primary"
                         variant="contained"
-                        className='menu__button'
+                        className='menu__button-main'
                         style={{ fontSize: '2rem', borderRadius: 0, color: 'white' }}
                     >
                         Фотоотчет
