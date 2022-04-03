@@ -12,7 +12,7 @@ import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import './Constructor.css';
 
 const instance = axios.create({
-    baseURL: 'http://23.111.124.132:8080/',
+    baseURL: 'https://cors-everywhere.herokuapp.com/http://23.111.124.132:8080/',
 });
 
 const emptyAuthor = {

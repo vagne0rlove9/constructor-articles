@@ -24,7 +24,7 @@ const Input = styled('input')({
 });
 
 const instance = axios.create({
-    baseURL: 'http://23.111.124.132:8080/',
+    baseURL: 'https://cors-everywhere.herokuapp.com/http://23.111.124.132:8080/',
 });
 
 const emptyAuthor = {
@@ -45,6 +45,8 @@ const Photos = () => {
     const [isFullImages, setIsFullImages] = useState(false);
     const [isFullAuthors, setIsFullAuthors] = useState(false);
     const [keywords, setKeywords] = useState('');
+    const [isDone, setIsDone] = useState(true);
+    const [articleId, setArticleId] = useState(3);
 
     useEffect(() => {
         swiper?.update();
@@ -117,23 +119,14 @@ const Photos = () => {
             });
 
             instance.post('/api/v3/articleimage', data)
-                .then(response => setIsLoading(prev => !prev));
+                .then(response => {
+                    setIsLoading(prev => !prev)
+                    setArticleId(response.id);
+                    setIsDone(true);
+                });
         },
         [annotation, authors, images, keywords, type],
     );
-
-    // const receiveImages = useCallback(
-    //     () => {
-    //         instance.get(`/api/v3/files/${14}`, {
-    //             responseType: "blob",
-    //         })
-    //             .then(response => {
-    //                 console.log(response);
-    //                 setReceivedImage(URL.createObjectURL(response.data));
-    //             });
-    //     },
-    //     [],
-    // );
 
     const addAuthorHandler = useCallback(() => {
         const newAuthors = [...authors];
@@ -209,16 +202,24 @@ const Photos = () => {
                     />
                 </div>
                 <div>
-                    <LoadingButton
-                        loading={isLoading}
-                        variant="contained"
-                        color="photos_secondary"
-                        component="span"
-                        style={{ color: 'white', marginBottom: '24px' }}
-                        onClick={submitImages}
-                    >
-                        Отправить отчет
-                    </LoadingButton>
+                    {isDone ?
+                        <Link to={`/photos/${articleId}`} className="menu__link">
+                            <Button
+                                variant="contained"
+                            >
+                                Перейти к статье
+                            </Button>
+                        </Link> :
+                        <LoadingButton
+                            loading={isLoading}
+                            variant="contained"
+                            color="photos_secondary"
+                            component="span"
+                            style={{ color: 'white', marginBottom: '24px' }}
+                            onClick={submitImages}
+                        >
+                            Отправить отчет
+                        </LoadingButton>}
                 </div>
                 {authors.map((author, index) => (
                     <AuthorForm
