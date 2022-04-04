@@ -119,6 +119,9 @@ const Photos = () => {
 
             instance.post('/api/v3/articleimage', data)
                 .then(response => {
+                    if (response.status === 201) {
+                        alert('Статья успешно добавлена!');
+                    }
                     setIsLoading(prev => !prev);
                     setArticleId(response.data.id);
                     setIsDone(true);

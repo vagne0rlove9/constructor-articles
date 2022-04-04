@@ -229,6 +229,9 @@ const PPTX = () => {
 
             instance.post('/api/v3/articleimage', data)
                 .then(response => {
+                    if (response.status === 201) {
+                        alert('Статья успешно добавлена!');
+                    }
                     setArticleId(response.data.id);
                     setIsDone(true);
                 })

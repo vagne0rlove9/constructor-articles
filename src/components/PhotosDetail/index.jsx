@@ -62,8 +62,6 @@ const PhotosDetail = () => {
                 <>
                     <h3>Аннотация</h3>
                     <p>{annotation}</p>
-                    <h3>Тип статьи</h3>
-                    <p>{type}</p>
                     <h3>Ключевые слова</h3>
                     <p>{keywords}</p>
                     <h3>Авторы</h3>
