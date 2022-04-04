@@ -25,7 +25,7 @@ const Menu = () => {
                     <Button
                         color="secondary"
                         variant="contained"
-                        className='menu__button-secondary'
+                        className='menu__button-secondary-right'
                         style={{ fontSize: '2rem', borderRadius: 0, color: 'white' }}
                     >
                         PDF
@@ -53,10 +53,22 @@ const Menu = () => {
                     <Button
                         color="photos_primary"
                         variant="contained"
-                        className='menu__button-main'
+                        className='menu__button-main-right'
                         style={{ fontSize: '2rem', borderRadius: 0, color: 'white' }}
                     >
                         Фотоотчет
+                    </Button>
+                </Link>
+            </Grid>
+            <Grid item xs={12}>
+                <Link to="/all-articles" className="menu__link">
+                    <Button
+                        color="photos_primary"
+                        variant="contained"
+                        className='menu__button-articles'
+                        style={{ fontSize: '2rem', borderRadius: 0, color: 'white' }}
+                    >
+                        Просмотреть все статьи
                     </Button>
                 </Link>
             </Grid>

@@ -7,11 +7,12 @@ import Constructor from './components/Constructor';
 import Photos from './components/Photos';
 import PDF from './components/PDF/PDF';
 import PPTX from './components/PPTX';
-
-import './App.css';
 import PhotosDetail from './components/PhotosDetail';
 import PDFDetail from './components/PDFDetail';
 import TextDetail from './components/TextDetail';
+import AllArticles from './components/AllArticles';
+
+import './App.css';
 
 const theme = createTheme({
     palette: {
@@ -45,6 +46,7 @@ function App() {
                 <Container>
                     <Routes>
                         <Route exact path="/" element={<Menu />} />
+                        <Route exact path="/all-articles" element={<AllArticles />} />
                         <Route path="/constructor" element={<Constructor />} />
                         <Route path="/constructor/:id" element={<TextDetail />} />
                         <Route path="/pdf" element={<PDF />} />

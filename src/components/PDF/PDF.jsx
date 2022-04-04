@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { Document, Page } from 'react-pdf/dist/esm/entry.webpack';
 import { useDropzone } from 'react-dropzone';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import Typography from '@mui/material/Typography';
 import ControlPanel from '../ControlPanel/ControlPanel';
@@ -34,10 +35,11 @@ const PDF = () => {
     const [fileRequest, setFileRequest] = useState(null);
     const [authors, setAuthors] = useState([emptyAuthor]);
     const [annotation, setAnnotation] = useState('');
-    const [type, setType] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isFullAuthors, setIsFullAuthors] = useState(false);
     const [keywords, setKeywords] = useState('');
+    const [isDone, setIsDone] = useState(false);
+    const [articleId, setArticleId] = useState(null);
 
     const deleteAuthorHandler = useCallback((index) => {
         let newAuthors = [...authors];
@@ -184,7 +186,7 @@ const PDF = () => {
                 id: '',
                 annotation,
                 keywords: keywords,
-                type: type,
+                type: 'pdf',
                 date: date.toLocaleString(),
                 resources: [fileRequest],
             };
@@ -196,9 +198,13 @@ const PDF = () => {
             });
 
             instance.post('/api/v3/articleimage', data)
+                .then(response => {
+                    setArticleId(response.data.id);
+                    setIsDone(true);
+                })
                 .finally(response => setIsLoading(prev => !prev));
         },
-        [annotation, authors, fileRequest, keywords, type],
+        [annotation, authors, fileRequest, keywords],
     )
 
     return (
@@ -227,16 +233,6 @@ const PDF = () => {
                     <FormControl fullWidth sx={{ m: 1 }} variant="standard">
                         <TextField
                             fullWidth
-                            label="Тип статьи"
-                            value={type}
-                            onChange={(event) => setType(event.target.value)}
-                        />
-                    </FormControl>
-                </div>
-                <div style={{ maxWidth: 400, margin: '12px auto' }}>
-                    <FormControl fullWidth sx={{ m: 1 }} variant="standard">
-                        <TextField
-                            fullWidth
                             label="Ключевые слова"
                             placeholder="Введите ключевые слова через запятую"
                             value={keywords}
@@ -244,16 +240,26 @@ const PDF = () => {
                         />
                     </FormControl>
                 </div>
-                <LoadingButton
-                    loading={isLoading}
-                    variant="contained"
-                    color="secondary"
-                    component="span"
-                    style={{ color: 'white', marginBottom: '24px' }}
-                    onClick={submitArtcile}
-                >
-                    Отправть отчет
-                </LoadingButton>
+                <div>
+                    {isDone ?
+                        <Link to={`/pdf/${articleId}`} className="menu__link">
+                            <Button
+                                variant="contained"
+                            >
+                                Перейти к статье
+                            </Button>
+                        </Link> :
+                        <LoadingButton
+                            loading={isLoading}
+                            variant="contained"
+                            color="secondary"
+                            component="span"
+                            style={{ color: 'white', marginBottom: '24px' }}
+                            onClick={submitArtcile}
+                        >
+                            Отправить отчет
+                        </LoadingButton>}
+                </div>
                 {authors.map((author, index) => (
                     <AuthorForm
                         id={index}

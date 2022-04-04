@@ -4,6 +4,7 @@ import axios from 'axios';
 import Typography from '@mui/material/Typography';
 import { Document, Page } from 'react-pdf/dist/esm/entry.webpack';
 import ControlPanel from '../ControlPanel/ControlPanel';
+import Loader from '../Loader';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -25,6 +26,7 @@ const PDFDetail = () => {
     const [keywords, setKeywords] = useState('');
     const [email, setEmail] = useState('');
     const [names, setNames] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         instance.get(`/api/v3/articlesimage/${params.id}`)
@@ -44,9 +46,10 @@ const PDFDetail = () => {
                         u8arr[n] = bstr.charCodeAt(n);
                     }
 
-                    const newFile = new File([u8arr], response.data.name, {type: "application/pdf"});
+                    const newFile = new File([u8arr], response.data.name, { type: "application/pdf" });
                     setFile([newFile]);
                     setPageNumber(1);
+                    setIsLoading(false);
                 }
             });
     }, []);
@@ -111,37 +114,40 @@ const PDFDetail = () => {
 
     return (
         <div>
-            <h3>Аннотация</h3>
-            <p>{annotation}</p>
-            <h3>Тип статьи</h3>
-            <p>{type}</p>
-            <h3>Ключевые слова</h3>
-            <p>{keywords}</p>
-            <h3>Авторы</h3>
-            <p>{names}</p>
-            <h3>Email автора</h3>
-            <p>{email}</p>
-            <ControlPanel
-                page={pageNumber}
-                maxPage={numPages}
-                changePageHandler={changePageHandler}
-                clickForward={clickForwardHandler}
-                clickBack={clickBackHandler}
-                clickFirstPage={clickFirstHandler}
-                clickLastPage={clickLastHandler}
-                zoom={zoom * 100}
-                changeZoomHandler={changeZoomHandler}
-            />
-            {
-                file.length !== 0 ?
-                    <Document file={file.length !== 0 ? file[0] : null} onLoadSuccess={onDocumentLoadSuccess}>
-                        <Page pageNumber={pageNumber} className="page" scale={zoom} />
-                    </Document>
-                    :
-                    <Typography className="text-container" variant="h6" gutterBottom component="div">
-                        Файл не выбран
-                    </Typography>
-            }
+            {isLoading ? <Loader /> :
+                <>
+                    <h3>Аннотация</h3>
+                    <p>{annotation}</p>
+                    <h3>Тип статьи</h3>
+                    <p>{type}</p>
+                    <h3>Ключевые слова</h3>
+                    <p>{keywords}</p>
+                    <h3>Авторы</h3>
+                    <p>{names}</p>
+                    <h3>Email автора</h3>
+                    <p>{email}</p>
+                    <ControlPanel
+                        page={pageNumber}
+                        maxPage={numPages}
+                        changePageHandler={changePageHandler}
+                        clickForward={clickForwardHandler}
+                        clickBack={clickBackHandler}
+                        clickFirstPage={clickFirstHandler}
+                        clickLastPage={clickLastHandler}
+                        zoom={zoom * 100}
+                        changeZoomHandler={changeZoomHandler}
+                    />
+                    {
+                        file.length !== 0 ?
+                            <Document file={file.length !== 0 ? file[0] : null} onLoadSuccess={onDocumentLoadSuccess}>
+                                <Page pageNumber={pageNumber} className="page" scale={zoom} />
+                            </Document>
+                            :
+                            <Typography className="text-container" variant="h6" gutterBottom component="div">
+                                Файл не выбран
+                            </Typography>
+                    }
+                </>}
         </div>
     )
 }

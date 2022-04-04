@@ -7,7 +7,7 @@ import { styled } from '@mui/material/styles';
 import { Button, Grid } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import LoadingButton from '@mui/lab/LoadingButton';
-
+import FormControl from '@mui/material/FormControl';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { useSwiper } from 'swiper/react';
 import { Navigation, Pagination } from "swiper";
@@ -40,13 +40,12 @@ const Photos = () => {
     const [imagesDisplay, setImagesDisplay] = useState([]);
     const [authors, setAuthors] = useState([emptyAuthor]);
     const [annotation, setAnnotation] = useState('');
-    const [type, setType] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isFullImages, setIsFullImages] = useState(false);
     const [isFullAuthors, setIsFullAuthors] = useState(false);
     const [keywords, setKeywords] = useState('');
-    const [isDone, setIsDone] = useState(true);
-    const [articleId, setArticleId] = useState(3);
+    const [isDone, setIsDone] = useState(false);
+    const [articleId, setArticleId] = useState(null);
 
     useEffect(() => {
         swiper?.update();
@@ -107,7 +106,7 @@ const Photos = () => {
                 id: '',
                 annotation,
                 keywords: keywords,
-                type: type,
+                type: 'photos',
                 date: date.toLocaleString(),
                 resources: images,
             };
@@ -120,12 +119,12 @@ const Photos = () => {
 
             instance.post('/api/v3/articleimage', data)
                 .then(response => {
-                    setIsLoading(prev => !prev)
-                    setArticleId(response.id);
+                    setIsLoading(prev => !prev);
+                    setArticleId(response.data.id);
                     setIsDone(true);
                 });
         },
-        [annotation, authors, images, keywords, type],
+        [annotation, authors, images, keywords],
     );
 
     const addAuthorHandler = useCallback(() => {
@@ -175,31 +174,27 @@ const Photos = () => {
                     После добавления нажимте кнопку "Отправить отчет"
                 </p>
                 <div style={{ maxWidth: 400, margin: '12px auto' }}>
-                    <TextField
-                        fullWidth
-                        label="Аннотация"
-                        multiline
-                        maxRows={4}
-                        value={annotation}
-                        onChange={(event) => setAnnotation(event.target.value)}
-                    />
+                    <FormControl fullWidth sx={{ m: 1 }} variant="standard">
+                        <TextField
+                            fullWidth
+                            label="Аннотация"
+                            multiline
+                            maxRows={4}
+                            value={annotation}
+                            onChange={(event) => setAnnotation(event.target.value)}
+                        />
+                    </FormControl>
                 </div>
                 <div style={{ maxWidth: 400, margin: '12px auto' }}>
-                    <TextField
-                        fullWidth
-                        label="Тип статьи"
-                        value={type}
-                        onChange={(event) => setType(event.target.value)}
-                    />
-                </div>
-                <div style={{ maxWidth: 400, margin: '12px auto' }}>
-                    <TextField
-                        fullWidth
-                        label="Ключевые слова"
-                        placeholder="Введите ключевые слова через запятую"
-                        value={keywords}
-                        onChange={(event) => setKeywords(event.target.value)}
-                    />
+                    <FormControl fullWidth sx={{ m: 1 }} variant="standard">
+                        <TextField
+                            fullWidth
+                            label="Ключевые слова"
+                            placeholder="Введите ключевые слова через запятую"
+                            value={keywords}
+                            onChange={(event) => setKeywords(event.target.value)}
+                        />
+                    </FormControl>
                 </div>
                 <div>
                     {isDone ?
