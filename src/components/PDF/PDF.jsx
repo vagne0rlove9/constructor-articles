@@ -44,6 +44,10 @@ const PDF = () => {
     const deleteAuthorHandler = useCallback((index) => {
         let newAuthors = [...authors];
 
+        if (newAuthors.length < 10) {
+            setIsFullAuthors(false);
+        }
+
         if (newAuthors.length === 1) {
             return;
         }
@@ -178,6 +182,32 @@ const PDF = () => {
 
     const submitArtcile = useCallback(
         () => {
+            console.log('numPages', numPages);
+            if (numPages >= 10) {
+                alert('Количество страниц в файле превышает допустимое (не более 10 страниц)');
+                return;
+            }
+
+            if (annotation.split(/,\s|\s|,/).length > 100) {
+                alert('Количество слов в аннотации превышает максимум (не более 100)');
+                return;
+            }
+
+            if (keywords.split(/,\s|\s|,/).length > 5) {
+                alert('Количество ключевых слов превышает максимум (не более 5)');
+                return;
+            }
+
+            if (authors.find(item => item.secondName === '' || item.name === '' || item.email === '')) {
+                alert('Заполните обязательные поля для автора');
+                return;
+            }
+
+            if (!fileRequest) {
+                alert('Добавьте файл');
+                return;
+            }
+
             setIsLoading(prev => !prev);
 
             const date = new Date();
@@ -207,7 +237,7 @@ const PDF = () => {
                 })
                 .finally(response => setIsLoading(prev => !prev));
         },
-        [annotation, authors, fileRequest, keywords],
+        [annotation, authors, fileRequest, keywords, numPages],
     )
 
     return (
